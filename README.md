@@ -79,32 +79,38 @@ Develop an in-app tool to allow setting up in-app nudges for various use cases, 
 
 # 📦 Inside the box
 
-## 1. System Architecture Diagram
+## 1. Importing Data
+- Utilized AWS Command Line Interface (CLI) to synchronize data from AWS S3 bucket.
+- Command used:
+  `aws s3 sync --no-sign-request s3://amazon-last-mile-challenges/almrrc2021/ almrrc2021_data
+`
+- Ensured the local environment had the necessary AWS CLI tools and permissions configured to access the S3 bucket.
 
-- Every project created is associated with its own unique `app_id` that makes the project, and all the nudges created under it independent of the platform.
-- The ideal implementation of our application consists of a _Client SDK_, _Backend SDK_, and a _Backend Server_, _Frontend Server_.
-- The _admin_ once authenticated on the **Frontend Server**, creates a project (and in it the nudges) that communicates with the **Backend Server**; stores the data.
-- The **Client SDK** essentially works as a CDN that at the end renders the nudge on when and where needed. It handles the _Campaign Nudges_ by fetching all of the configured _campaign_ nudges for the specified `app_id`.
-- Since we are building upon an existing _business backend_, there are API calls present. Our **Backend SDK** intercepts those calls and injects an `event_label` to the data. This data is then pushed to a SMQ (Simple Message Queue).
-- The **Backend Server** has a listener on the queue and pops every message received in the queue. It then filters and fetches out the nudges based on the `event_label` and `app_id`. These fetched configurations are then pushed back to the **Client SDK** that is listening to a web socket for these **Trigger Nudges**.
-- On receiving configuration on the socket, the **Client SDK** again renders the requested nudges on the application.
 
-<div align="center">
-  <img alt="System Architecture" src="docs/arch3.png" />
-</div>
-<div align="center">
-  <img alt="System Architecture" src="docs/arch1.png" />
-</div>
-<div align="center">
-  <img alt="System Architecture" src="docs/arch2.png" />
-</div>
+## 2. Cleaning Data
 
-## 2. Admin Flow
+  ###### 1. Data Organization
 
-- The _Admin_ will authenticate itself.
-- It will then create a project.
-- Inside the project, there is a application specific SDK/CDN `script` that needs to be pasted in the client application.
-- It will then create the desired nudges in the project.
+- Data comprised several JSON files organized into three main directories:
+    - `model_apply_inputs`
+    - `model_build_inputs`
+    - `model_score_inputs`
+
+###### 2. Data Conversion
+
+- Utilized a script to automate the conversion of JSON files to CSV format.
+- Ensured that the conversion process retained all relevant data fields and structures.
+- Performed data validation checks post-conversion to ensure the integrity and completeness of the data in CSV format.
+###### 3. Data Sampling
+
+- Sampled each CSV file to a maximum size of 50MB.
+- Applied randomness in the sampling process using a seed set to 1 to ensure reproducibility.
+
+###### 4. DataFrame Creation
+
+- Combined the CSV files within each folder into a unified DataFrame limited to 100MB using pandas.
+- Ensured that the DataFrame maintained all necessary attributes and was ready for further analysis or model building.
+
 
 # ⏭️ What's next
 
@@ -125,8 +131,8 @@ Please read [`Contributing.md`](https://github.com/HackRx3/PS1_NudgeFudge/blob/m
 
 # 💥 Contributors
 
-<a href="https://github.com/HackRx3/PS1_NudgeFudge/graphs/contributors">
-<img src="https://contrib.rocks/image?repo=HackRx3/PS1_NudgeFudge" alt="Contributors">
+<a href="https://github.com/RhythmSrivastava/RhygyaHackathon/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=RhythmSrivastava/RhygyaHackathon" alt="Contributors">
 </a>
                                                                                   
 # 🚨 Forking this repo
